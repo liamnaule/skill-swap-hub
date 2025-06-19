@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from models import db, Session
+from flask_jwt_extended import jwt_required
 
 session_bp = Blueprint("session_bp", __name__)
 
 @session_bp.route("/sessions", methods=["GET"])
+@jwt_required()
 def get_sessions():
     sessions = Session.query.all()
     return jsonify([{

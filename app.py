@@ -16,9 +16,9 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'liam@gmail.com'
-app.config['MAIL_PASSWORD'] = 'rert vgfd fesf'
-app.config['MAIL_DEFAULT_SENDER'] = 'liam@gmail.com'
+app.config['MAIL_USERNAME'] = 'liamnaule@gmail.com'
+app.config['MAIL_PASSWORD'] = 'mypassword123'
+app.config['MAIL_DEFAULT_SENDER'] = 'liamnaule@gmail.com'
 app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_VERIFY_SUB'] = False

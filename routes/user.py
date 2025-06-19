@@ -1,16 +1,26 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from models import db
 from models.user import User
 from werkzeug.security import generate_password_hash
-from flask_mail import Message
-from app import app, mail
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 user_bp = Blueprint("user_bp", __name__)
 
+def is_admin():
+    current_user = User.query.get(get_jwt_identity())
+    return current_user and current_user.is_admin
 
-# Register a new user
+def is_self_or_admin(user_id):
+    current_user = User.query.get(get_jwt_identity())
+    return current_user and (current_user.id == user_id or current_user.is_admin)
+
+# Register a new user (admin only)
 @user_bp.route("/users", methods=["POST"])
+@jwt_required()
 def create_user():
+    if not is_admin():
+        return jsonify({"error": "Admin privileges required"}), 403
+
     data = request.get_json()
     username = data.get("username")
     email = data.get("email")
@@ -31,10 +41,12 @@ def create_user():
     db.session.add(new_user)
 
     try:
+        from app import mail  # Import here to avoid circular import
+        from flask_mail import Message
         msg = Message(
             subject="Welcome to StackOverflow Clone",
             recipients=[email],
-            sender=app.config['MAIL_DEFAULT_SENDER'],
+            sender=current_app.config['MAIL_DEFAULT_SENDER'],
             body=f"Hello {username},\n\nWelcome to StackOverflow Clone!"
         )
         mail.send(msg)
@@ -44,10 +56,13 @@ def create_user():
         db.session.rollback()
         return jsonify({"error": "Failed to register/send email"}), 400
 
-
-# Update a user
+# Update a user (self or admin)
 @user_bp.route("/users/<int:user_id>", methods=["PATCH"])
+@jwt_required()
 def update_user(user_id):
+    if not is_self_or_admin(user_id):
+        return jsonify({"error": "Not authorized"}), 403
+
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -55,14 +70,19 @@ def update_user(user_id):
     data = request.get_json()
     user.username = data.get("username", user.username)
     user.email = data.get("email", user.email)
-    user.is_admin = data.get("is_admin", user.is_admin)
-    user.is_blocked = data.get("is_blocked", user.is_blocked)
+
+    # Only admin can update is_admin and is_blocked
+    if is_admin():
+        user.is_admin = data.get("is_admin", user.is_admin)
+        user.is_blocked = data.get("is_blocked", user.is_blocked)
 
     try:
+        from app import mail  # Import here to avoid circular import
+        from flask_mail import Message
         msg = Message(
             subject="Profile Updated",
             recipients=[user.email],
-            sender=app.config['MAIL_DEFAULT_SENDER'],
+            sender=current_app.config['MAIL_DEFAULT_SENDER'],
             body=f"Hello {user.username},\n\nYour profile was updated."
         )
         mail.send(msg)
@@ -72,10 +92,13 @@ def update_user(user_id):
         db.session.rollback()
         return jsonify({"error": "Update failed"}), 400
 
-
-# Get all users
+# Get all users (admin only)
 @user_bp.route("/users", methods=["GET"])
+@jwt_required()
 def get_all_users():
+    if not is_admin():
+        return jsonify({"error": "Admin privileges required"}), 403
+
     users = User.query.all()
     return jsonify([
         {
@@ -88,10 +111,13 @@ def get_all_users():
         } for u in users
     ]), 200
 
-
-# Get user by ID
+# Get user by ID (self or admin)
 @user_bp.route("/users/<int:user_id>", methods=["GET"])
+@jwt_required()
 def get_user(user_id):
+    if not is_self_or_admin(user_id):
+        return jsonify({"error": "Not authorized"}), 403
+
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -104,10 +130,13 @@ def get_user(user_id):
         "created_at": user.created_at
     }), 200
 
-
-# Delete a user
+# Delete a user (admin only)
 @user_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@jwt_required()
 def delete_user(user_id):
+    if not is_admin():
+        return jsonify({"error": "Admin privileges required"}), 403
+
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404

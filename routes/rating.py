@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from models import db, Rating
+from flask_jwt_extended import jwt_required
 
 rating_bp = Blueprint("rating_bp", __name__)
 
 @rating_bp.route("/ratings", methods=["GET"])
+@jwt_required()
 def get_ratings():
     ratings = Rating.query.all()
     return jsonify([{

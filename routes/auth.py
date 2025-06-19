@@ -8,17 +8,35 @@ auth_bp = Blueprint("auth_bp", __name__)
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    email = request.json.get("email")
-    password = request.json.get("password")
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Missing JSON in request"}), 400
+
+    email = data.get("email")
+    password = data.get("password")
 
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
-    if user and check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token), 200
-    return jsonify({"error": "Invalid credentials"}), 400
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    if user.is_blocked:
+        return jsonify({"error": "User is blocked"}), 403
+
+    access_token = create_access_token(identity=user.id)
+    return jsonify(
+        access_token=access_token,
+        user={
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "is_admin": user.is_admin,
+            "is_blocked": user.is_blocked,
+            "created_at": user.created_at
+        }
+    ), 200
 
 @auth_bp.route("/current_user", methods=["GET"])
 @jwt_required()

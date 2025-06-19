@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from models import db, Skill
+from flask_jwt_extended import jwt_required
 
 skill_bp = Blueprint("skill_bp", __name__)
 
 @skill_bp.route("/skills", methods=["GET"])
+@jwt_required()
 def get_skills():
     skills = Skill.query.all()
     return jsonify([{
