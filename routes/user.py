@@ -15,7 +15,7 @@ def is_self_or_admin(user_id):
     return current_user and (current_user.id == user_id or current_user.is_admin)
 
 # Register a new user (admin only)
-@user_bp.route("/users", methods=["POST"])
+@user_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_user():
     if not is_admin():
@@ -41,13 +41,13 @@ def create_user():
     db.session.add(new_user)
 
     try:
-        from app import mail  # Import here to avoid circular import
+        from app import mail  
         from flask_mail import Message
         msg = Message(
-            subject="Welcome to StackOverflow Clone",
+            subject="Welcome to Skill swap hub",
             recipients=[email],
             sender=current_app.config['MAIL_DEFAULT_SENDER'],
-            body=f"Hello {username},\n\nWelcome to StackOverflow Clone!"
+            body=f"Hello {username},\n\nWelcome to Skill swap hub!"
         )
         mail.send(msg)
         db.session.commit()
@@ -57,7 +57,7 @@ def create_user():
         return jsonify({"error": "Failed to register/send email"}), 400
 
 # Update a user (self or admin)
-@user_bp.route("/users/<int:user_id>", methods=["PATCH"])
+@user_bp.route("/<int:user_id>", methods=["PATCH"])
 @jwt_required()
 def update_user(user_id):
     if not is_self_or_admin(user_id):
@@ -93,7 +93,7 @@ def update_user(user_id):
         return jsonify({"error": "Update failed"}), 400
 
 # Get all users (admin only)
-@user_bp.route("/users", methods=["GET"])
+@user_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_all_users():
     if not is_admin():
@@ -112,7 +112,7 @@ def get_all_users():
     ]), 200
 
 # Get user by ID (self or admin)
-@user_bp.route("/users/<int:user_id>", methods=["GET"])
+@user_bp.route("/<int:user_id>", methods=["GET"])
 @jwt_required()
 def get_user(user_id):
     if not is_self_or_admin(user_id):
@@ -131,7 +131,7 @@ def get_user(user_id):
     }), 200
 
 # Delete a user (admin only)
-@user_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@user_bp.route("/<int:user_id>", methods=["DELETE"])
 @jwt_required()
 def delete_user(user_id):
     if not is_admin():

@@ -14,9 +14,20 @@ class User(db.Model):
     is_blocked = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    skills = db.relationship('Skill', backref='user', lazy='dynamic')
-    taught_sessions = db.relationship('Session', foreign_keys='Session.teacher_id', backref='teacher', lazy='dynamic')
-    learned_sessions = db.relationship('Session', foreign_keys='Session.learner_id', backref='learner', lazy='dynamic')
+    # Relationships
+    taught_sessions = db.relationship(
+        'Session',
+        foreign_keys='Session.teacher_id',
+        back_populates='teacher',
+        lazy='dynamic'
+    )
+    learned_sessions = db.relationship(
+        'Session',
+        foreign_keys='Session.learner_id',
+        back_populates='learner',
+        lazy='dynamic'
+    )
+    skills = db.relationship('Skill', backref='user', lazy=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
