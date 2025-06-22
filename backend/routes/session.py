@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from models import db, Session
+from backend.models import db
+from backend.models.session import Session
 from flask_jwt_extended import jwt_required
 
 session_bp = Blueprint("session_bp", __name__)
