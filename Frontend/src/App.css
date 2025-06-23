@@ -1,42 +1,76 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Import Poppins from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset and base styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Main content padding for fixed navbar */
+main {
+  padding-top: 70px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Navbar branding */
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
+/* Skill card styling */
 .card {
-  padding: 2em;
+  transition: transform 0.2s ease-in-out;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+.card-img-top {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
 }
 
-.read-the-docs {
-  color: #888;
+/* Form input focus */
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Profile image */
+.profile-img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  max-width: 150px;
+}
+
+/* Footer */
+footer {
+  background-color: #343a40;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  main {
+    padding-top: 56px;
+  }
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  .card-img-top {
+    aspect-ratio: 4 / 3;
+  }
+  .profile-img {
+    max-width: 120px;
+  }
+}
+
+/* Lazy-loaded images */
+img.lazy-load {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+img.lazy-load.loaded {
+  opacity: 1;
 }
