@@ -17,7 +17,7 @@ function SkillPost() {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      // Replace with API call
+      // Replacing with API call
       console.log('Skill posted:', formData);
       setSuccess(true);
       setFormData({ title: '', description: '', category: '' });

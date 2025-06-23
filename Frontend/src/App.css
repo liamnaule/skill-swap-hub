@@ -50,6 +50,11 @@ footer {
   background-color: #343a40;
 }
 
+/* Login form sizing */
+.login-form {
+  max-width: 450px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 576px) {
   main {
