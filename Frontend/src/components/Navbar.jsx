@@ -12,8 +12,6 @@ function Navbar() {
             <Nav.Link as={NavLink} to="/">Home</Nav.Link>
             <Nav.Link as={NavLink} to="/skills">Skills</Nav.Link>
             <Nav.Link as={NavLink} to="/post-skill">Post Skill</Nav.Link>
-            <Nav.Link as={NavLink} to="/profile">Profile</Nav.Link>
-            <Nav.Link as={NavLink} to="/admin">Admin</Nav.Link>
           </Nav>
         </BSNavbar.Collapse>
       </Container>
