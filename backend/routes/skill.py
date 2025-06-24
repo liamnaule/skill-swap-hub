@@ -10,7 +10,8 @@ skill_bp = Blueprint("skill_bp", __name__)
 def get_skills():
     skills = Skill.query.all()
     return jsonify([{
-        "id": skill.skill_id,
+        "id": skill.skill_id,  # Add this for frontend compatibility
+        "skill_id": skill.skill_id,
         "user_id": skill.user_id,
         "title": skill.title,
         "is_offered": skill.is_offered,

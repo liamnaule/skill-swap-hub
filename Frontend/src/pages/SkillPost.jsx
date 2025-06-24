@@ -1,28 +1,42 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import { SkillsContext } from '../context/SkillsContext';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function SkillPost() {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-  });
+  const [formData, setFormData] = useState({ title: '' });
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const { addSkill } = useContext(SkillsContext);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Replacing with API call
-      console.log('Skill posted:', formData);
+    setError('');
+    if (!user) {
+      setError('You must be logged in to post a skill.');
+      navigate('/login');
+      return;
+    }
+    const skillData = {
+      user_id: user.id,
+      title: formData.title,
+      is_offered: true,
+      is_approved: false,
+    };
+    const ok = await addSkill(skillData);
+    if (ok) {
       setSuccess(true);
-      setFormData({ title: '', description: '', category: '' });
-    } catch (error) {
-      console.error('Error posting skill:', error);
+      setFormData({ title: '' });
+      setTimeout(() => navigate('/skills'), 2000);
+    } else {
+      setError('Error posting skill.');
     }
   };
 
@@ -30,6 +44,7 @@ function SkillPost() {
     <Container className="py-5">
       <h2>Post a New Skill</h2>
       {success && <Alert variant="success">Skill posted successfully!</Alert>}
+      {error && <Alert variant="danger">{error}</Alert>}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3">
           <Form.Label>Title</Form.Label>
@@ -40,31 +55,6 @@ function SkillPost() {
             onChange={handleChange}
             required
           />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={4}
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Category</Form.Label>
-          <Form.Select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select...</option>
-            <option value="Coding">Coding</option>
-            <option value="Music">Music</option>
-            <option value="Cooking">Cooking</option>
-          </Form.Select>
         </Form.Group>
         <Button type="submit" variant="primary">
           Post Skill

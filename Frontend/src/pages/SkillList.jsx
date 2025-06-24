@@ -1,29 +1,34 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { useContext, useMemo, useState, useEffect } from 'react';
+import { Container, Row, Col, Form, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import SkillCard from '../components/SkillCard';
-import axios from 'axios';
-
-// Mock data
-const mockSkills = [
-  { id: 1, title: 'Learn Python', description: 'Beginner-friendly Python lessons.', user: { name: 'Alice' }, image: 'https://via.placeholder.com/300x200' },
-  { id: 2, title: 'Guitar Lessons', description: 'Master the guitar basics.', user: { name: 'Bob' }, image: 'https://via.placeholder.com/300x200' },
-];
+import { SkillsContext } from '../context/SkillsContext';
+import { AuthContext } from '../context/AuthContext';
 
 function SkillList() {
-  const [skills, setSkills] = useState([]);
+  const { skills, loading, error } = useContext(SkillsContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Replacing with API call
-    setSkills(mockSkills);
-  }, []);
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
 
-  const filteredSkills = useMemo(() =>
-    skills.filter(skill =>
-      skill.title.toLowerCase().includes(search.toLowerCase())
-    ),
+  const filteredSkills = useMemo(
+    () =>
+      skills.filter((skill) =>
+        skill.title.toLowerCase().includes(search.toLowerCase())
+      ),
     [skills, search]
   );
+
+  if (loading || authLoading)
+    return <Container className="py-5"><p>Loading...</p></Container>;
+  if (error)
+    return <Container className="py-5"><Alert variant="danger">{error}</Alert></Container>;
 
   return (
     <Container className="py-5">
@@ -33,15 +38,21 @@ function SkillList() {
           type="text"
           placeholder="Search skills..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
       </Form.Group>
       <Row xs={1} sm={2} md={3} className="g-4">
-        {filteredSkills.map(skill => (
-          <Col key={skill.id}>
-            <SkillCard skill={skill} />
+        {filteredSkills.length > 0 ? (
+          filteredSkills.map((skill) => (
+            <Col key={skill.id}>
+              <SkillCard skill={skill} />
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <Alert variant="info">No skills found.</Alert>
           </Col>
-        ))}
+        )}
       </Row>
     </Container>
   );

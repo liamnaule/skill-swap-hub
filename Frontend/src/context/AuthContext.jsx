@@ -7,14 +7,31 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Persist token in localStorage
+  const getToken = () => localStorage.getItem('token');
+  const setToken = (token) => localStorage.setItem('token', token);
+  const removeToken = () => localStorage.removeItem('token');
+
   useEffect(() => {
     const fetchUser = async () => {
+      const token = getToken();
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
-        // Replacing with API call 
-        const mockUser = null; // No user until login
-        setUser(mockUser);
+        const res = await axios.get('http://127.0.0.1:5000/auth/current_user', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUser({
+          id: res.data.id,
+          name: res.data.username,
+          email: res.data.email,
+          role: res.data.is_admin ? 'admin' : 'user',
+        });
       } catch (error) {
-        console.error('Error fetching user:', error);
+        setUser(null);
+        removeToken();
       } finally {
         setLoading(false);
       }
@@ -23,11 +40,26 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    // Replacing with API call 
-    setUser({ id: 1, name: credentials.email.split('@')[0], role: 'user' });
+    const res = await axios.post('http://127.0.0.1:5000/auth/login', credentials);
+    setToken(res.data.access_token);
+    setUser({
+      id: res.data.user.id,
+      name: res.data.user.username,
+      email: res.data.user.email,
+      role: res.data.user.is_admin ? 'admin' : 'user',
+    });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const token = getToken();
+    if (token) {
+      try {
+        await axios.delete('http://127.0.0.1:5000/auth/logout', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } catch (e) {}
+      removeToken();
+    }
     setUser(null);
   };
 

@@ -1,35 +1,51 @@
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { Card, Button } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-function SkillCard({ skill }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
+const SkillCard = ({ skill }) => {
+  const [userName, setUserName] = useState('Unknown');
 
   useEffect(() => {
-    const img = new Image();
-    img.src = skill.image || '';
-    img.onload = () => setImageLoaded(true);
-  }, [skill.image]);
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const res = await axios.get(`http://127.0.0.1:5000/users/${skill.user_id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUserName(res.data.username);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user:', err.response?.data?.error || err.message);
+      }
+    };
+    fetchUser();
+  }, [skill.user_id]);
 
   return (
     <Card className="h-100 shadow-sm">
-      <img
-        src={skill.image || ''}
-        alt={skill.title}
-        className={`card-img-top lazy-load ${imageLoaded ? 'loaded' : ''}`}
-      />
       <Card.Body>
         <Card.Title>{skill.title}</Card.Title>
-        <Card.Text>{skill.description.slice(0, 100)}...</Card.Text>
         <Card.Text>
-          <small className="text-muted">By {skill.user.name}</small>
+          <strong>Offered by:</strong> {userName}<br />
+          <strong>Status:</strong> {skill.is_approved ? 'Approved' : 'Pending Approval'}<br />
+          <strong>Offered:</strong> {skill.is_offered ? 'Available' : 'Not Available'}<br />
+          <strong>Posted:</strong>{' '}
+          {new Date(skill.created_at).toLocaleString('en-US', {
+            timeZone: 'Africa/Nairobi',
+          })}
         </Card.Text>
-        <Button as={Link} to={`/book/${skill.id}`} variant="primary">
-          Book Session
-        </Button>
+        {skill.is_approved && skill.is_offered && (
+          <Button as={Link} to={`/book/${skill.id}`} variant="primary">
+            Book Session
+          </Button>
+        )}
       </Card.Body>
     </Card>
   );
-}
+};
 
 export default SkillCard;

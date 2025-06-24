@@ -1,38 +1,49 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Container, Button, Row, Col } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
 function Profile() {
   const { user, loading } = useContext(AuthContext);
+  const [userSkills, setUserSkills] = useState([]);
+
+  useEffect(() => {
+    if (user) {
+      const fetchUserSkills = async () => {
+        try {
+          const res = await axios.get('http://127.0.0.1:5000/skills/', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+          setUserSkills(res.data.filter(skill => skill.user_id === user.id));
+        } catch (err) {
+          console.error('Failed to fetch skills:', err.response?.data?.error || err.message);
+        }
+      };
+      fetchUserSkills();
+    }
+  }, [user]);
 
   if (loading) return <Container className="py-5"><p>Loading...</p></Container>;
-
-  const mockUser = user || {
-    name: 'John Doe',
-    bio: 'Passionate about teaching coding and learning guitar.',
-    skills: ['Python', 'JavaScript'],
-    image: '',
-  };
 
   return (
     <Container className="py-5">
       <h2>Profile</h2>
       <Row className="g-4">
         <Col md={4} className="text-center">
-          <img
-            src={mockUser.image}
-            alt="Profile"
-            className=""
-          />
+          <img src={user?.image || ''} alt="Profile" className="" />
         </Col>
         <Col md={8}>
-          <h3>{mockUser.name}</h3>
-          <p>{mockUser.bio}</p>
+          <h3>{user?.name || 'Unknown'}</h3>
+          <p>{user?.bio || 'No bio available.'}</p>
           <h5>Skills Offered</h5>
           <ul>
-            {mockUser.skills.map(skill => (
-              <li key={skill}>{skill}</li>
-            ))}
+            {userSkills.length > 0 ? (
+              userSkills.map(skill => <li key={skill.id}>{skill.title}</li>)
+            ) : (
+              <li>No skills listed.</li>
+            )}
           </ul>
           <Button variant="outline-primary">Edit Profile</Button>
         </Col>

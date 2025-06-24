@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from './AuthContext';
 
 export const SkillsContext = createContext();
 
@@ -7,39 +8,54 @@ export const SkillsProvider = ({ children }) => {
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
+
+  const API_URL = 'http://127.0.0.1:5000/skills/';
 
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        // Replacing with API call 
-        const mockSkills = [
-          { id: 1, title: 'Learn Python', description: 'Beginner-friendly Python lessons.', user: { name: 'Alice' }, image: 'https://via.placeholder.com/300x200' },
-          { id: 2, title: 'Guitar Lessons', description: 'Master the guitar basics.', user: { name: 'Bob' }, image: 'https://via.placeholder.com/300x200' },
-        ];
-        setSkills(mockSkills);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Please log in to view skills');
+        }
+        const res = await axios.get(API_URL, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        setSkills(res.data);
       } catch (err) {
-        setError('Failed to fetch skills');
+        setError(err.response?.data?.error || 'Failed to fetch skills');
       } finally {
         setLoading(false);
       }
     };
-    fetchSkills();
-  }, []);
+    if (user) {
+      fetchSkills();
+    } else {
+      setError('Please log in to view skills');
+      setLoading(false);
+    }
+  }, [user]);
 
   const addSkill = async (skillData) => {
     try {
-      // Replacing with API call 
-      const newSkill = {
-        id: skills.length + 1,
-        title: skillData.title,
-        description: skillData.description,
-        user: { name: 'Current User' }, // Replacing with real user from AuthContext
-        image: skillData.image || '',
-      };
-      setSkills([...skills, newSkill]);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Please log in to add a skill');
+      }
+      const res = await axios.post(API_URL, skillData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      setSkills((prev) => [...prev, { ...skillData, id: res.data.id }]);
       return true;
     } catch (err) {
-      setError('Failed to add skill');
+      setError(err.response?.data?.error || 'Failed to add skill');
       return false;
     }
   };

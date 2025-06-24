@@ -5,11 +5,13 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
 from backend.models import db, TokenBlocklist
+import os
 
 app = Flask(__name__)
 
 # Configurations
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -22,12 +24,18 @@ app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_VERIFY_SUB'] = False
 
+# Explicitly allow CORS for frontend
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"], "supports_credentials": True}})
+
 # Extensions
 db.init_app(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
 jwt = JWTManager(app)
-CORS(app)
+
+# Create database tables
+with app.app_context():
+    db.create_all()
 
 # Blueprints
 from backend.routes.auth import auth_bp
@@ -42,7 +50,7 @@ app.register_blueprint(skill_bp, url_prefix="/skills")
 app.register_blueprint(session_bp, url_prefix="/sessions")
 app.register_blueprint(rating_bp, url_prefix="/ratings")
 
-# Optional: Root route for API welcome
+# Root route
 @app.route("/")
 def index():
     return "Welcome to the Skill Swap Hub API!"
@@ -54,6 +62,4 @@ def check_if_token_revoked(jwt_header, jwt_payload):
     return db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar() is not None
 
 if __name__ == "__main__":
-    app.run(debug=True)
-
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
