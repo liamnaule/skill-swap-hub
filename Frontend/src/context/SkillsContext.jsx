@@ -10,7 +10,7 @@ export const SkillsProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const { user, loading: authLoading } = useContext(AuthContext);
 
-  const API_URL = 'http://127.0.0.1:5000/skills/';
+  const API_URL = `${import.meta.env.VITE_API_URL}/skills/`;
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -53,7 +53,8 @@ export const SkillsProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
       });
-      setSkills((prev) => [...prev, { ...skillData, skill_id: res.data.id }]);
+      // Use the full skill object returned by the backend
+      setSkills((prev) => [...prev, res.data]);
       return true;
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to add skill');

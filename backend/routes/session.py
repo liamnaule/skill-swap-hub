@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 from backend.models import db
 from backend.models.session import Session
 from flask_jwt_extended import jwt_required
+from datetime import datetime
+from dateutil.parser import parse as parse_datetime
 
 session_bp = Blueprint("session_bp", __name__)
 
@@ -30,11 +32,17 @@ def create_session():
     if not all([skill_id, teacher_id, learner_id, scheduled_at]):
         return jsonify({"error": "All fields are required"}), 400
 
+    try:
+        scheduled_at_dt = parse_datetime(scheduled_at)
+    except Exception:
+        return jsonify({"error": "Invalid date format for scheduled_at"}), 400
+
     session = Session(
         skill_id=skill_id,
         teacher_id=teacher_id,
         learner_id=learner_id,
-        scheduled_at=scheduled_at
+        scheduled_at=scheduled_at_dt,
+        created_at=datetime.utcnow()
     )
     db.session.add(session)
     db.session.commit()

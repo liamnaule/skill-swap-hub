@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Container, Alert, Table, Button } from 'react-bootstrap';
+import { Container, Alert, Table, Button, Form, Row, Col } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,6 +10,9 @@ function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [skills, setSkills] = useState([]);
   const [reports, setReports] = useState([]);
+  const [regForm, setRegForm] = useState({ username: '', email: '', password: '' });
+  const [regError, setRegError] = useState('');
+  const [regSuccess, setRegSuccess] = useState('');
 
   useEffect(() => {
     if (!loading && (!user || user.role !== 'admin')) {
@@ -24,9 +27,9 @@ function AdminDashboard() {
     const token = localStorage.getItem('token');
     try {
       const [usersRes, skillsRes, reportsRes] = await Promise.all([
-        axios.get('http://127.0.0.1:5000/users/', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://127.0.0.1:5000/skills/', { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get('http://127.0.0.1:5000/reports/', { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${import.meta.env.VITE_API_URL}/users/`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${import.meta.env.VITE_API_URL}/skills/`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${import.meta.env.VITE_API_URL}/reports/`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       setUsers(usersRes.data);
       setSkills(skillsRes.data);
@@ -40,13 +43,49 @@ function AdminDashboard() {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
-        `http://127.0.0.1:5000/skills/${skillId}`,
+        `${import.meta.env.VITE_API_URL}/skills/${skillId}`,
         { is_approved: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSkills(skills.map(s => s.skill_id === skillId ? { ...s, is_approved: true } : s));
     } catch (err) {
       console.error('Approve skill error:', err.response?.data || err.message);
+    }
+  };
+
+  // Register user
+  const handleRegChange = (e) => {
+    setRegForm({ ...regForm, [e.target.name]: e.target.value });
+  };
+
+  const handleRegSubmit = async (e) => {
+    e.preventDefault();
+    setRegError('');
+    setRegSuccess('');
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/users/`, regForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setRegSuccess('User registered successfully!');
+      setRegForm({ username: '', email: '', password: '' });
+      fetchAdminData(); // Refresh user list
+    } catch (err) {
+      setRegError(err.response?.data?.error || 'Registration failed');
+    }
+  };
+
+  // Delete user
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUsers(users.filter(u => u.id !== userId));
+    } catch (err) {
+      alert('Failed to delete user');
     }
   };
 
@@ -69,6 +108,49 @@ function AdminDashboard() {
       <h2>Admin Dashboard</h2>
       <Alert variant="info">Welcome, {user?.username || 'Admin'}!</Alert>
 
+      {/* User Registration Form */}
+      <h3>Register New User</h3>
+      <Form onSubmit={handleRegSubmit} className="mb-4">
+        <Row>
+          <Col md={3}>
+            <Form.Control
+              name="username"
+              placeholder="Username"
+              value={regForm.username}
+              onChange={handleRegChange}
+              required
+            />
+          </Col>
+          <Col md={4}>
+            <Form.Control
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={regForm.email}
+              onChange={handleRegChange}
+              required
+            />
+          </Col>
+          <Col md={3}>
+            <Form.Control
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={regForm.password}
+              onChange={handleRegChange}
+              required
+            />
+          </Col>
+          <Col md={2}>
+            <Button type="submit" variant="primary" className="w-100">
+              Register
+            </Button>
+          </Col>
+        </Row>
+        {regError && <Alert variant="danger" className="mt-2">{regError}</Alert>}
+        {regSuccess && <Alert variant="success" className="mt-2">{regSuccess}</Alert>}
+      </Form>
+
       <h3>Manage Users</h3>
       <Table striped bordered hover>
         <thead>
@@ -78,6 +160,7 @@ function AdminDashboard() {
             <th>Email</th>
             <th>Admin</th>
             <th>Blocked</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +171,16 @@ function AdminDashboard() {
               <td>{u.email}</td>
               <td>{u.is_admin ? 'Yes' : 'No'}</td>
               <td>{u.is_blocked ? 'Yes' : 'No'}</td>
+              <td>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDeleteUser(u.id)}
+                  disabled={u.id === user.id}
+                >
+                  Delete
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>

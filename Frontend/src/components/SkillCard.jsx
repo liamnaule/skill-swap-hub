@@ -16,7 +16,7 @@ const SkillCard = ({ skill, onReport }) => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const res = await axios.get(`http://127.0.0.1:5000/users/${skill.user_id}`, {
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/${skill.user_id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUserName(res.data.username);
@@ -33,7 +33,7 @@ const SkillCard = ({ skill, onReport }) => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://127.0.0.1:5000/reports/',
+        `${import.meta.env.VITE_API_URL}/reports/`,
         { reported_skill_id: skill.skill_id, reason: reportReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -62,9 +62,13 @@ const SkillCard = ({ skill, onReport }) => {
           <strong>Posted:</strong>{' '}
           {new Date(skill.created_at).toLocaleString('en-US', { timeZone: 'Africa/Nairobi' })}
         </Card.Text>
-        {skill.is_approved && skill.is_offered && (
+        {skill.is_approved && skill.is_offered ? (
           <Button as={Link} to={`/book/${skill.skill_id}`} variant="primary" className="me-2">
             Book Session
+          </Button>
+        ) : (
+          <Button variant="secondary" className="me-2" disabled>
+            Not Available for Booking
           </Button>
         )}
         <Button variant="outline-danger" onClick={() => setShowReport(!showReport)}>

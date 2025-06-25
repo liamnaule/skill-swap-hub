@@ -30,7 +30,7 @@ function Booking() {
     }
     try {
       await axios.post(
-        'http://127.0.0.1:5000/sessions/',
+        `${import.meta.env.VITE_API_URL}/sessions/`,
         {
           skill_id: skill.skill_id,
           teacher_id: skill.user_id,

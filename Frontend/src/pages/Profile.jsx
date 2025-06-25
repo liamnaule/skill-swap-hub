@@ -17,7 +17,7 @@ function Profile() {
       setEditData({ username: user.username, email: user.email });
       const fetchUserSkills = async () => {
         try {
-          const res = await axios.get('http://127.0.0.1:5000/skills/', {
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/skills/`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -41,7 +41,7 @@ function Profile() {
     setEditSuccess('');
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://127.0.0.1:5000/users/${user.id}`, editData, {
+      await axios.patch(`${import.meta.env.VITE_API_URL}/users/${user.id}`, editData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setEditSuccess('Profile updated!');

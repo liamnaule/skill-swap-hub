@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       try {
-        const res = await axios.get('http://127.0.0.1:5000/auth/current_user', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/current_user`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser({
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const res = await axios.post('http://127.0.0.1:5000/auth/login', credentials);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, credentials);
       setToken(res.data.access_token);
       setUser({
         id: res.data.user.id,
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     const token = getToken();
     if (token) {
       try {
-        await axios.delete('http://127.0.0.1:5000/auth/logout', {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/auth/logout`, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (e) {

@@ -6,6 +6,9 @@ from flask_cors import CORS
 from datetime import timedelta
 from backend.models import db, TokenBlocklist
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -17,12 +20,12 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'liamnaule@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vvvs mqst dblw lkww'
 app.config['MAIL_DEFAULT_SENDER'] = 'liamnaule@gmail.com'
-app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_VERIFY_SUB'] = False
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 # Explicitly allow CORS for both localhost and 127.0.0.1
 CORS(
