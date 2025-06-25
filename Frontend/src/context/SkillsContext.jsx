@@ -8,7 +8,7 @@ export const SkillsProvider = ({ children }) => {
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading } = useContext(AuthContext);
 
   const API_URL = 'http://127.0.0.1:5000/skills/';
 
@@ -26,19 +26,20 @@ export const SkillsProvider = ({ children }) => {
           },
         });
         setSkills(res.data);
+        setError(null);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to fetch skills');
       } finally {
         setLoading(false);
       }
     };
-    if (user) {
+    if (!authLoading && user) {
       fetchSkills();
-    } else {
+    } else if (!authLoading && !user) {
       setError('Please log in to view skills');
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const addSkill = async (skillData) => {
     try {
@@ -52,7 +53,7 @@ export const SkillsProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
       });
-      setSkills((prev) => [...prev, { ...skillData, id: res.data.id }]);
+      setSkills((prev) => [...prev, { ...skillData, skill_id: res.data.id }]);
       return true;
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to add skill');

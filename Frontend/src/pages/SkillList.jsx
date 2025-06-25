@@ -1,6 +1,6 @@
-import { useContext, useMemo, useState, useEffect } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { Container, Row, Col, Form, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SkillCard from '../components/SkillCard';
 import { SkillsContext } from '../context/SkillsContext';
 import { AuthContext } from '../context/AuthContext';
@@ -10,12 +10,13 @@ function SkillList() {
   const { user, loading: authLoading } = useContext(AuthContext);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      navigate('/login', { state: { from: location } });
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, location]);
 
   const filteredSkills = useMemo(
     () =>
@@ -24,6 +25,10 @@ function SkillList() {
       ),
     [skills, search]
   );
+
+  const handleReport = (skillId) => {
+    alert(`Report skill with ID: ${skillId}`);
+  };
 
   if (loading || authLoading)
     return <Container className="py-5"><p>Loading...</p></Container>;
@@ -44,8 +49,8 @@ function SkillList() {
       <Row xs={1} sm={2} md={3} className="g-4">
         {filteredSkills.length > 0 ? (
           filteredSkills.map((skill) => (
-            <Col key={skill.id}>
-              <SkillCard skill={skill} />
+            <Col key={skill.skill_id}>
+              <SkillCard skill={skill} onReport={handleReport} />
             </Col>
           ))
         ) : (

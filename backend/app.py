@@ -24,8 +24,12 @@ app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_VERIFY_SUB'] = False
 
-# Explicitly allow CORS for frontend
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"], "supports_credentials": True}})
+# Explicitly allow CORS for both localhost and 127.0.0.1
+CORS(
+    app,
+    resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}},
+    supports_credentials=True
+)
 
 # Extensions
 db.init_app(app)
@@ -34,8 +38,8 @@ mail = Mail(app)
 jwt = JWTManager(app)
 
 # Create database tables
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 # Blueprints
 from backend.routes.auth import auth_bp
@@ -43,12 +47,14 @@ from backend.routes.user import user_bp
 from backend.routes.skill import skill_bp
 from backend.routes.session import session_bp
 from backend.routes.rating import rating_bp
+from backend.routes.report import report_bp
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(user_bp, url_prefix="/users")
 app.register_blueprint(skill_bp, url_prefix="/skills")
 app.register_blueprint(session_bp, url_prefix="/sessions")
 app.register_blueprint(rating_bp, url_prefix="/ratings")
+app.register_blueprint(report_bp, url_prefix="/reports")
 
 # Root route
 @app.route("/")

@@ -20,7 +20,7 @@ function Booking() {
     }
   }, [user, skillsLoading, navigate]);
 
-  const skill = skills.find((s) => s.id === parseInt(skillId));
+  const skill = skills.find((s) => String(s.skill_id) === String(skillId));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ function Booking() {
       await axios.post(
         'http://127.0.0.1:5000/sessions/',
         {
-          skill_id: skill.id,
+          skill_id: skill.skill_id,
           teacher_id: skill.user_id,
           learner_id: user.id,
           scheduled_at: new Date(date).toISOString(),

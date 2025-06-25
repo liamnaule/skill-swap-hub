@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Persist token in localStorage
   const getToken = () => localStorage.getItem('token');
   const setToken = (token) => localStorage.setItem('token', token);
   const removeToken = () => localStorage.removeItem('token');
@@ -17,6 +16,7 @@ export const AuthProvider = ({ children }) => {
       const token = getToken();
       if (!token) {
         setLoading(false);
+        setUser(null);
         return;
       }
       try {
@@ -25,11 +25,12 @@ export const AuthProvider = ({ children }) => {
         });
         setUser({
           id: res.data.id,
-          name: res.data.username,
+          username: res.data.username,
           email: res.data.email,
           role: res.data.is_admin ? 'admin' : 'user',
         });
       } catch (error) {
+        console.error('Fetch user error:', error.response?.data || error.message);
         setUser(null);
         removeToken();
       } finally {
@@ -45,13 +46,13 @@ export const AuthProvider = ({ children }) => {
       setToken(res.data.access_token);
       setUser({
         id: res.data.user.id,
-        name: res.data.user.username,
+        username: res.data.user.username,
         email: res.data.user.email,
         role: res.data.user.is_admin ? 'admin' : 'user',
       });
       return true;
     } catch (err) {
-      // Optionally, you can set an error state here for UI feedback
+      console.error('Login error:', err.response?.data || err.message);
       return false;
     }
   };
@@ -63,14 +64,16 @@ export const AuthProvider = ({ children }) => {
         await axios.delete('http://127.0.0.1:5000/auth/logout', {
           headers: { Authorization: `Bearer ${token}` }
         });
-      } catch (e) {}
+      } catch (e) {
+        console.error('Logout error:', e.response?.data || e.message);
+      }
       removeToken();
     }
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

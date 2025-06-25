@@ -1,13 +1,14 @@
 import { useState, useContext } from 'react';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,10 +16,12 @@ function Login() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    try {
-      await login(formData);
-      navigate('/profile');
-    } catch (err) {
+    setError('');
+    const success = await login(formData);
+    if (success) {
+      const redirectTo = location.state?.from?.pathname || '/profile';
+      navigate(redirectTo, { replace: true });
+    } else {
       setError('Invalid credentials');
     }
   };

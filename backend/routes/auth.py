@@ -17,11 +17,15 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
+    print("LOGIN ATTEMPT:", email, password)  # Debug
+
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
+    print("USER FOUND:", user)  # Debug
     if not user or not check_password_hash(user.password, password):
+        print("LOGIN FAIL: invalid credentials")  # Debug
         return jsonify({"error": "Invalid credentials"}), 401
 
     if user.is_blocked:
@@ -36,7 +40,7 @@ def login():
             "email": user.email,
             "is_admin": user.is_admin,
             "is_blocked": user.is_blocked,
-            "created_at": user.created_at
+            "created_at": user.created_at.isoformat()
         }
     ), 200
 
@@ -51,9 +55,9 @@ def get_current_user():
         "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
-        "is_admin": current_user.is_admin,
+        "is_admin": current_user.is_admin,  
         "is_blocked": current_user.is_blocked,
-        "created_at": current_user.created_at
+        "created_at": current_user.created_at.isoformat()
     }), 200
 
 @auth_bp.route("/logout", methods=["DELETE"])

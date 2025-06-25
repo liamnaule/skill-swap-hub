@@ -1,11 +1,13 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Navbar as BSNavbar, Nav, Container, Button } from 'react-bootstrap';
 import { useContext } from 'react';
+import { Navbar as BSNavbar, Nav, Container, Button } from 'react-bootstrap';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  console.log('Navbar user:', user); // Debug log
 
   const handleLogout = () => {
     logout();
@@ -24,13 +26,15 @@ function Navbar() {
             <Nav.Link as={NavLink} to="/post-skill">Post Skill</Nav.Link>
             {user ? (
               <>
-                <Nav.Link as={NavLink} to="/profile">Profile</Nav.Link>
+                <Nav.Link as={NavLink} to="/profile">
+                  {user.username ? `Profile (${user.username})` : 'Profile'}
+                </Nav.Link>
                 {user.role === 'admin' && (
                   <Nav.Link as={NavLink} to="/admin">Admin</Nav.Link>
                 )}
-                <Nav.Link as={Button} variant="link" onClick={handleLogout} className="text-white">
+                <Button variant="link" onClick={handleLogout} className="text-white">
                   Logout
-                </Nav.Link>
+                </Button>
               </>
             ) : (
               <Nav.Link as={NavLink} to="/login">Login</Nav.Link>

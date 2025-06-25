@@ -115,7 +115,8 @@ def get_all_users():
 @user_bp.route("/<int:user_id>", methods=["GET"])
 @jwt_required()
 def get_user(user_id):
-    if not is_self_or_admin(user_id):
+    current_user = User.query.get(get_jwt_identity())
+    if not (current_user and (current_user.id == user_id or current_user.is_admin)):
         return jsonify({"error": "Not authorized"}), 403
 
     user = User.query.get(user_id)
