@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from backend.models import db
 from backend.models.session import Session
+from backend.models.rating import Rating
 from flask_jwt_extended import jwt_required
 from datetime import datetime
 from dateutil.parser import parse as parse_datetime
@@ -11,13 +12,16 @@ session_bp = Blueprint("session_bp", __name__)
 @jwt_required()
 def get_sessions():
     sessions = Session.query.all()
+    # Fetch ratings for all sessions in one go for efficiency
+    ratings = {r.session_id: r.rating for r in Rating.query.all()}
     return jsonify([{
         "id": s.session_id,
         "skill_id": s.skill_id,
         "teacher_id": s.teacher_id,
         "learner_id": s.learner_id,
         "scheduled_at": s.scheduled_at,
-        "created_at": s.created_at
+        "created_at": s.created_at,
+        "rating": ratings.get(s.session_id)  # Add rating here
     } for s in sessions]), 200
 
 @session_bp.route("/", methods=["POST"])
