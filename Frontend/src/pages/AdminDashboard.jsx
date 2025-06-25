@@ -39,17 +39,17 @@ function AdminDashboard() {
     }
   };
 
-  const approveSkill = async (skillId) => {
+  const updateSkillApproval = async (skillId, isApproved) => {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
         `${import.meta.env.VITE_API_URL}/skills/${skillId}`,
-        { is_approved: true },
+        { is_approved: isApproved },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setSkills(skills.map(s => s.skill_id === skillId ? { ...s, is_approved: true } : s));
+      setSkills(skills.map(s => s.skill_id === skillId ? { ...s, is_approved: isApproved } : s));
     } catch (err) {
-      console.error('Approve skill error:', err.response?.data || err.message);
+      console.error('Skill approval error:', err.response?.data || err.message);
     }
   };
 
@@ -86,6 +86,34 @@ function AdminDashboard() {
       setUsers(users.filter(u => u.id !== userId));
     } catch (err) {
       alert('Failed to delete user');
+    }
+  };
+
+  const toggleBlockUser = async (userId, isBlocked) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/users/${userId}`,
+        { is_blocked: !isBlocked },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUsers(users.map(u => u.id === userId ? { ...u, is_blocked: !isBlocked } : u));
+    } catch (err) {
+      alert('Failed to update user block status');
+    }
+  };
+
+  // Delete report
+  const handleDeleteReport = async (reportId) => {
+    const token = localStorage.getItem('token');
+    if (!window.confirm('Delete this report?')) return;
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/reports/${reportId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReports(reports.filter(r => r.id !== reportId));
+    } catch (err) {
+      alert('Failed to delete report');
     }
   };
 
@@ -173,6 +201,15 @@ function AdminDashboard() {
               <td>{u.is_blocked ? 'Yes' : 'No'}</td>
               <td>
                 <Button
+                  variant={u.is_blocked ? "success" : "warning"}
+                  size="sm"
+                  onClick={() => toggleBlockUser(u.id, u.is_blocked)}
+                  className="me-2"
+                  disabled={u.id === user.id}
+                >
+                  {u.is_blocked ? "Unblock" : "Block"}
+                </Button>
+                <Button
                   variant="danger"
                   size="sm"
                   onClick={() => handleDeleteUser(u.id)}
@@ -197,15 +234,21 @@ function AdminDashboard() {
           </tr>
         </thead>
         <tbody>
-          {skills.filter(s => !s.is_approved).map(s => (
+          {skills.map(s => (
             <tr key={s.skill_id}>
               <td>{s.skill_id}</td>
               <td>{s.title}</td>
               <td>{getUsername(s.user_id)}</td>
               <td>
-                <Button variant="success" onClick={() => approveSkill(s.skill_id)}>
-                  Approve
-                </Button>
+                {!s.is_approved ? (
+                  <Button variant="success" onClick={() => updateSkillApproval(s.skill_id, true)}>
+                    Approve
+                  </Button>
+                ) : (
+                  <Button variant="warning" onClick={() => updateSkillApproval(s.skill_id, false)}>
+                    Disapprove
+                  </Button>
+                )}
               </td>
             </tr>
           ))}
@@ -222,6 +265,7 @@ function AdminDashboard() {
             <th>Reported Skill</th>
             <th>Reason</th>
             <th>Created At</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -233,6 +277,11 @@ function AdminDashboard() {
               <td>{r.reported_skill_id ? getSkillTitle(r.reported_skill_id) : 'N/A'}</td>
               <td>{r.reason}</td>
               <td>{r.created_at ? new Date(r.created_at).toLocaleString() : 'N/A'}</td>
+              <td>
+                <Button variant="danger" size="sm" onClick={() => handleDeleteReport(r.id)}>
+                  Delete
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>

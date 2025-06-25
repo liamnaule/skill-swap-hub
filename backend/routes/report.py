@@ -42,3 +42,15 @@ def get_reports():
         "reason": r.reason,
         "created_at": r.created_at.isoformat()
     } for r in reports]), 200
+
+@report_bp.route("/<int:report_id>", methods=["DELETE"])
+@jwt_required()
+def delete_report(report_id):
+    if not is_admin():
+        return jsonify({"error": "Admin privileges required"}), 403
+    report = Report.query.get(report_id)
+    if not report:
+        return jsonify({"error": "Report not found"}), 404
+    db.session.delete(report)
+    db.session.commit()
+    return jsonify({"success": "Report deleted"}), 200
