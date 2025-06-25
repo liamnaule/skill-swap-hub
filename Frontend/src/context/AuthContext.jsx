@@ -40,14 +40,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const res = await axios.post('http://127.0.0.1:5000/auth/login', credentials);
-    setToken(res.data.access_token);
-    setUser({
-      id: res.data.user.id,
-      name: res.data.user.username,
-      email: res.data.user.email,
-      role: res.data.user.is_admin ? 'admin' : 'user',
-    });
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/auth/login', credentials);
+      setToken(res.data.access_token);
+      setUser({
+        id: res.data.user.id,
+        name: res.data.user.username,
+        email: res.data.user.email,
+        role: res.data.user.is_admin ? 'admin' : 'user',
+      });
+      return true;
+    } catch (err) {
+      // Optionally, you can set an error state here for UI feedback
+      return false;
+    }
   };
 
   const logout = async () => {
