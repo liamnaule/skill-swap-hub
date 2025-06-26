@@ -1,2 +1,5 @@
 # Editor directories and files
-*.env
+instance/
+.env
+__pycache__/
+*.pyc
