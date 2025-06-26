@@ -53,7 +53,7 @@ export const SkillsProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
       });
-      // Use the full skill object returned by the backend
+     
       setSkills((prev) => [...prev, res.data]);
       return true;
     } catch (err) {

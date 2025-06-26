@@ -20,7 +20,7 @@ function AdminDashboard() {
     } else if (!loading && user.role === 'admin') {
       fetchAdminData();
     }
-    // eslint-disable-next-line
+    
   }, [user, loading, navigate]);
 
   const fetchAdminData = async () => {

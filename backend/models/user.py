@@ -1,7 +1,6 @@
 from datetime import datetime
 from werkzeug.security import generate_password_hash
-from backend.models import db  # back to absolute import
-
+from backend.models import db
 
 class User(db.Model):
     __tablename__ = "users"
@@ -10,6 +9,7 @@ class User(db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    bio = db.Column(db.Text, nullable=True)  
     is_admin = db.Column(db.Boolean, default=False)
     is_blocked = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -31,7 +31,6 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-
 
 class TokenBlocklist(db.Model):
     __tablename__ = "token_blocklist"

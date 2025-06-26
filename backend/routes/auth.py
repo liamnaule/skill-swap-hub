@@ -1,10 +1,10 @@
 from flask import request, jsonify, Blueprint
+from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from werkzeug.security import check_password_hash
-from backend.models import db
-from backend.models.user import User
-from backend.models import TokenBlocklist
+from backend.models import db, User, TokenBlocklist
 from datetime import datetime, timezone
+import os
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -17,15 +17,14 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    print("LOGIN ATTEMPT:", email, password)  # Debug
-
+    print("LOGIN ATTEMPT:", email, password)
     if not email or not password:
         return jsonify({"error": "Email and password are required"}), 400
 
     user = User.query.filter_by(email=email).first()
-    print("USER FOUND:", user)  # Debug
+    print("USER FOUND:", user)
     if not user or not check_password_hash(user.password, password):
-        print("LOGIN FAIL: invalid credentials")  # Debug
+        print("LOGIN FAIL: invalid credentials")
         return jsonify({"error": "Invalid credentials"}), 401
 
     if user.is_blocked:
@@ -38,6 +37,7 @@ def login():
             "id": user.id,
             "username": user.username,
             "email": user.email,
+            "bio": user.bio,
             "is_admin": user.is_admin,
             "is_blocked": user.is_blocked,
             "created_at": user.created_at.isoformat()
@@ -55,7 +55,8 @@ def get_current_user():
         "id": current_user.id,
         "username": current_user.username,
         "email": current_user.email,
-        "is_admin": current_user.is_admin,  
+        "bio": current_user.bio,
+        "is_admin": current_user.is_admin,
         "is_blocked": current_user.is_blocked,
         "created_at": current_user.created_at.isoformat()
     }), 200

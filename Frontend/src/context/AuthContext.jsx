@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
           id: res.data.id,
           username: res.data.username,
           email: res.data.email,
+          bio: res.data.bio || '',
           role: res.data.is_admin ? 'admin' : 'user',
+          is_blocked: res.data.is_blocked
         });
       } catch (error) {
         console.error('Fetch user error:', error.response?.data || error.message);
@@ -48,7 +50,9 @@ export const AuthProvider = ({ children }) => {
         id: res.data.user.id,
         username: res.data.user.username,
         email: res.data.user.email,
+        bio: res.data.user.bio || '',
         role: res.data.user.is_admin ? 'admin' : 'user',
+        is_blocked: res.data.user.is_blocked
       });
       return true;
     } catch (err) {

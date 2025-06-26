@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from backend.app import app, db
 from backend.models.user import User
 from backend.models.skill import Skill
@@ -66,28 +70,37 @@ with app.app_context():
         skill_id=skill1.skill_id,
         teacher_id=alice.id,
         learner_id=bob.id,
-        scheduled_at=datetime.utcnow() + timedelta(days=1),
+        scheduled_at=datetime.utcnow() - timedelta(days=1),
         created_at=datetime.utcnow()
     )
     session2 = Session(
         skill_id=skill2.skill_id,
         teacher_id=bob.id,
         learner_id=alice.id,
-        scheduled_at=datetime.utcnow() + timedelta(days=2),
+        scheduled_at=datetime.utcnow() - timedelta(days=1),
         created_at=datetime.utcnow()
     )
-    db.session.add_all([session1, session2])
+    session3 = Session(
+        skill_id=skill1.skill_id,
+        teacher_id=alice.id,
+        learner_id=bob.id,
+        scheduled_at=datetime.utcnow() - timedelta(days=2),
+        created_at=datetime.utcnow()
+    )
+    db.session.add_all([session1, session2, session3])
     db.session.commit()
 
     # RATINGS
     rating1 = Rating(
         session_id=session1.session_id,
         rating=5,
+        user_id=bob.id,  
         created_at=datetime.utcnow()
     )
     rating2 = Rating(
         session_id=session2.session_id,
         rating=4,
+        user_id=alice.id,  
         created_at=datetime.utcnow()
     )
     db.session.add_all([rating1, rating2])

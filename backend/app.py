@@ -1,11 +1,15 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from flask import Flask
 from flask_migrate import Migrate
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
-from backend.models import db, TokenBlocklist
-import os
+from backend.models import db, TokenBlocklist  
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,17 +24,20 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_DEFAULT_SENDER'] = 'liamnaule@gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME', 'liamnaule@gmail.com')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_VERIFY_SUB'] = False
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
-# Explicitly allow CORS for both localhost and 127.0.0.1
+# Load CORS origins from environment variable
+CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',')
+
+# CORS configuration
 CORS(
     app,
-    resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}},
+    resources={r"/*": {"origins": CORS_ORIGINS}},
     supports_credentials=True
 )
 
@@ -40,9 +47,6 @@ migrate = Migrate(app, db)
 mail = Mail(app)
 jwt = JWTManager(app)
 
-# Create database tables
-# with app.app_context():
-#     db.create_all()
 
 # Blueprints
 from backend.routes.auth import auth_bp

@@ -1,11 +1,10 @@
 from flask import Blueprint, jsonify, request
-from backend.models import db
-from backend.models.report import Report
+from flask_cors import CORS
+from backend.models import db, Report
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .user import is_admin
+from backend.routes.user import is_admin
 
 report_bp = Blueprint("report_bp", __name__)
-
 @report_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_report():

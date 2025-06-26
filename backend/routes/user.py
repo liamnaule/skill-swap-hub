@@ -113,22 +113,15 @@ def get_all_users():
 
 # Get user by ID (self or admin)
 @user_bp.route("/<int:user_id>", methods=["GET"])
-@jwt_required()
+@jwt_required()  
 def get_user(user_id):
-    current_user = User.query.get(get_jwt_identity())
-    if not (current_user and (current_user.id == user_id or current_user.is_admin)):
-        return jsonify({"error": "Not authorized"}), 403
-
     user = User.query.get(user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
+    # Only returns public info
     return jsonify({
         "id": user.id,
         "username": user.username,
-        "email": user.email,
-        "is_admin": user.is_admin,
-        "is_blocked": user.is_blocked,
-        "created_at": user.created_at
     }), 200
 
 # Delete a user (admin only)

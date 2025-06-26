@@ -1,8 +1,8 @@
-"""Initial migration
+"""initialization
 
-Revision ID: 8a82fa2f96ad
+Revision ID: 9cb24aafe6a8
 Revises: 
-Create Date: 2025-06-25 16:17:37.886699
+Create Date: 2025-06-26 20:55:45.814260
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8a82fa2f96ad'
+revision = '9cb24aafe6a8'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +29,7 @@ def upgrade():
     sa.Column('username', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
+    sa.Column('bio', sa.Text(), nullable=True),
     sa.Column('is_admin', sa.Boolean(), nullable=True),
     sa.Column('is_blocked', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -74,8 +75,10 @@ def upgrade():
     sa.Column('rating_id', sa.Integer(), nullable=False),
     sa.Column('session_id', sa.Integer(), nullable=False),
     sa.Column('rating', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['session_id'], ['sessions.session_id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('rating_id')
     )
     # ### end Alembic commands ###

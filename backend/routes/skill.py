@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from backend.models import db
 from backend.models.skill import Skill
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from .user import is_admin  # Import from user.py
+from .user import is_admin  
 
 skill_bp = Blueprint("skill_bp", __name__)
 

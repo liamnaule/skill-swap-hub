@@ -17,10 +17,13 @@ function Home() {
       <Row className="g-4 text-center">
         <Col md={4}>
           <Image
-            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
+            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80&auto=format&fit=crop"
             alt="Learn new skills"
             className="section-img mb-3"
             fluid
+            width={600}
+            height={400}
+            loading="lazy"
           />
           <h3 className="fw-semibold">Learn</h3>
           <p>Find experts to teach you new skills, from coding to cooking.</p>
@@ -28,10 +31,13 @@ function Home() {
         </Col>
         <Col md={4}>
           <Image
-            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655"
+            src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80&auto=format&fit=crop"
             alt="Teach your expertise"
             className="section-img mb-3"
             fluid
+            width={600}
+            height={400}
+            loading="lazy"
           />
           <h3 className="fw-semibold">Teach</h3>
           <p>Share your expertise and help others grow.</p>
@@ -39,10 +45,13 @@ function Home() {
         </Col>
         <Col md={4}>
           <Image
-            src="https://images.unsplash.com/photo-1517048676732-d65bc937f952"
+            src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&q=80&auto=format&fit=crop"
             alt="Connect with community"
             className="section-img mb-3"
             fluid
+            width={600}
+            height={400}
+            loading="lazy"
           />
           <h3 className="fw-semibold">Connect</h3>
           <p>Build meaningful relationships through skill sharing.</p>
