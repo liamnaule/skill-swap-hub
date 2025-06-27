@@ -4,7 +4,7 @@
 
 ---
 
-##  Featuressss 
+##  Features
 
 ### User Functions
 
