@@ -4,7 +4,7 @@
 
 ---
 
-##  Featuressss
+##  Featuress
 
 ### User Functions
 
@@ -15,7 +15,6 @@
 - **Report Issues**: Flag inappropriate content or users for admin attention.
 
 ### Admin Functions
-
 - **Moderate Skills**: Approve, reject, or remove user-submitted skills.
 - **Manage Users**: View all users and suspend accounts if needed.
 - **Handle Reports**: Investigate and resolve user-submitted reports.
