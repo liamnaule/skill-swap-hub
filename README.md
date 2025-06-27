@@ -13,15 +13,20 @@
 - Log in to their account using their credentials
 - Update their profile details
 - Post a new skills
-- rate the skills 
+- Rate the skills 
+- Book session
 
 ### An Admin Can:
-- Log in to the admin panel using credentials
+- Access the admin dashboard 
 - View a list of all users
+- Register users
 - Approve and disapprove skills
-- Hide irrelevant or inappropriate answers
 - View and manage all reports
 - Delete or block users
+- Book session
+- Update the profile details
+- Post a new skills
+- Rate the skills 
 
 ---
 
@@ -62,12 +67,19 @@ https://skill-swap-hub-frontend.vercel.app/
 
 https://skill-swap-hub-backend.onrender.com
 
+---
+
+## Presentation video link 
+
+https://drive.google.com/file/d/1w7goJbp3lWZ3hFTh4M4RKLDr-i3nKn4z/view?usp=sharing
+
+
 
 ---
 
 ## Known Bugs
 
-The application works but has a few errors  — **has bugs at this time**.
+The application works perfectly  — **has zero bugs**.
 
 ---
 
