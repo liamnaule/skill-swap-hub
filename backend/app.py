@@ -32,7 +32,7 @@ app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 # Load CORS origins from environment variable
-CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'https://skill-swap-hub-frontend.onrender.com,http://localhost:5173/').split(',')
+CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'https://skill-swap-hub-frontend.vercel.app/,http://localhost:5173/').split(',')
 
 # CORS configuration
 CORS(

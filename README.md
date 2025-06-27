@@ -56,7 +56,7 @@
 
 - **Frontend Live**: [swap skills Frontend](#) 
 
- https://skill-swap-hub-frontend.onrender.com
+https://skill-swap-hub-frontend.vercel.app/
 
 - **Backend Live**: [Swap skills Backend](#)
 
