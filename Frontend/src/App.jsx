@@ -6,7 +6,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import SkillList from './pages/SkillList';
 import SkillPost from './pages/SkillPost';
-import Login from './pages/login';
+import Login from './pages/login'; 
+import Signup from './pages/signup'; 
 import Profile from './pages/Profile';
 import Booking from './pages/Booking';
 import AdminDashboard from './pages/AdminDashboard';
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Route path="/skills" element={<SkillList />} />
       <Route path="/post-skill" element={<SkillPost />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/book/:skillId" element={<Booking />} />
       <Route
@@ -38,6 +40,7 @@ function AppRoutes() {
           )
         }
       />
+      <Route path="*" element={<div className="container py-5"><h2>404 Not Found</h2></div>} /> 
     </Routes>
   );
 }
