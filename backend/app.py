@@ -32,7 +32,7 @@ app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 # Load CORS origins from environment variable
-CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',')
+CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'https://skill-swap-hub-frontend.onrender.com').split(',')
 
 # CORS configuration
 CORS(
