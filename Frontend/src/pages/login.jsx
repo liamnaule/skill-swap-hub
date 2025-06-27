@@ -1,7 +1,7 @@
-import { useState, useContext } from 'react';
+import { useState, useContext } from 'react'; 
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom'; 
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -54,6 +54,9 @@ function Login() {
         <Button type="submit" variant="primary" className="w-100">
           Login
         </Button>
+        <div className="text-center mt-3">
+          <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+        </div>
       </Form>
     </Container>
   );
