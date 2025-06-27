@@ -56,8 +56,27 @@ export const AuthProvider = ({ children }) => {
       });
       return true;
     } catch (err) {
-      console.error('Login error:', err.response?.data || err.message);
-      return false;
+      console.error('Login error:', err.response?.data?.error || err.message);
+      return err.response?.data?.error || 'Login failed';
+    }
+  };
+
+  const signup = async (userData) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/signup`, userData);
+      setToken(res.data.access_token);
+      setUser({
+        id: res.data.user.id,
+        username: res.data.user.username,
+        email: res.data.user.email,
+        bio: res.data.user.bio || '',
+        role: res.data.user.is_admin ? 'admin' : 'user',
+        is_blocked: res.data.user.is_blocked
+      });
+      return true;
+    } catch (err) {
+      console.error('Signup error:', err.response?.data?.error || err.message);
+      return err.response?.data?.error || 'Signup failed';
     }
   };
 
@@ -77,7 +96,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

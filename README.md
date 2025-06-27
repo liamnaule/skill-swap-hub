@@ -1,33 +1,89 @@
 # skill-swap-hub
 
-**Skill Swap Hub** is a community-based skill-sharing platform where users can teach or learn various skills through one-on-one sessions. Whether you're offering a language lesson or looking to learn photography, the platform allows users to connect, book sessions, and exchange knowledge — all without financial transactions.
+**Skill Swap Hub** is a Community Skill-Sharing Platform. Users can post skills they offer or want to learn and book sessions for skill exchanges or free learning. Admins moderate skills and handle reports.
+
 
 ---
 
-##  Featuress
 
-### User Functions
+## Features / User Stories
 
-- **Register/Login**: Secure user authentication using email, username, and password.
-- **Post Skills**: Add skills you’re willing to teach or share.
-- **Book Sessions**: Schedule one-on-one sessions with other users.
-- **Rate Sessions**: Give star ratings (1–5) after completing a session.
-- **Report Issues**: Flag inappropriate content or users for admin attention.
+### A User Can:
+- Register an account with a **username**, **email**, and **password**
+- Log in to their account using their credentials
+- Update their profile details
+- Post a new skills
+- rate the skills 
 
-### Admin Functions
-- **Moderate Skills**: Approve, reject, or remove user-submitted skills.
-- **Manage Users**: View all users and suspend accounts if needed.
-- **Handle Reports**: Investigate and resolve user-submitted reports.
+### An Admin Can:
+- Log in to the admin panel using credentials
+- View a list of all users
+- Approve and disapprove skills
+- Hide irrelevant or inappropriate answers
+- View and manage all reports
+- Delete or block users
 
 ---
 
-## Unique Features
+## Setup/Installation Requirements
 
-- **Skill Swap Focus**: Encourages community-driven, barter-style learning — no money involved.
-- **Minimalist Design**: A clean and simple user interface designed for quick skill posting and seamless session booking.
+1. **Download the project**  
+   gitclone and ZIP file from the Code section ,download and extract it to your desired folder.
+
+2. **Backend Setup**  
+   - Open the project folder in **VS Code**
+   - Open a terminal and navigate to the `backend/` folder  
+   - Run:
+     ```bash
+     pipenv install
+     pipenv shell
+     flask run 
+     ```
+   - Your Flask backend server should now be running.
+
+3. **Frontend Setup**  
+   - Open a new terminal and navigate to the `frontend/` folder  
+   - Run:
+     ```bash
+     npm install
+     npm run dev
+     ```
+   - Your React frontend should now be live.
+
+---
+
+## Deployment
+
+- **Frontend Live**: [swap skills Frontend](#) 
+
+ https://skill-swap-hub-frontend.onrender.com
+
+- **Backend Live**: [Swap skills Backend](#)
+
+https://skill-swap-hub-backend.onrender.com
 
 
+---
 
+## Known Bugs
 
-## deployment 
+The application works but has a few errors  — **has bugs at this time**.
+
+---
+
+## Technologies Used
+
+- **Bootstrap CSS**
+- **React**
+- **Google Fonts**
+- **Flask**
+- **Python**
+- **Flask-JWT-Extended**
+
+---
+
+## Author
+Liam Naule
+
+---
 

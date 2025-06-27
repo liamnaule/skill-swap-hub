@@ -1,12 +1,59 @@
 from flask import request, jsonify, Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from backend.models import db, User, TokenBlocklist
 from datetime import datetime, timezone
 import os
 
 auth_bp = Blueprint("auth_bp", __name__)
+
+@auth_bp.route("/signup", methods=["POST"])
+def signup():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "Missing JSON in request"}), 400
+
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not username or not email or not password:
+        return jsonify({"error": "Username, email, and password are required"}), 400
+
+    # Check if email or username already exists
+    if User.query.filter_by(email=email).first():
+        return jsonify({"error": "Email already registered"}), 400
+    if User.query.filter_by(username=username).first():
+        return jsonify({"error": "Username already taken"}), 400
+
+    # Create new user
+    new_user = User(
+        username=username,
+        email=email,
+        password=generate_password_hash(password),
+        bio="",  # Default empty bio
+        is_admin=False,
+        is_blocked=False,
+        created_at=datetime.now(timezone.utc)
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Generate access token for immediate login
+    access_token = create_access_token(identity=new_user.id)
+    return jsonify(
+        access_token=access_token,
+        user={
+            "id": new_user.id,
+            "username": new_user.username,
+            "email": new_user.email,
+            "bio": new_user.bio,
+            "is_admin": new_user.is_admin,
+            "is_blocked": new_user.is_blocked,
+            "created_at": new_user.created_at.isoformat()
+        }
+    ), 201
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
